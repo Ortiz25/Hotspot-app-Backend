@@ -34,7 +34,7 @@ const dbConfig = {
 const sms = AfricasTalking(credentials).SMS;
 
 const app = express();
-const port = 8080;
+const port = 3000;
 const hostname = "0.0.0.0";
 
 app.use(cors());
