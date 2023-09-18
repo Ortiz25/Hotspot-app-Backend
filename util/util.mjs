@@ -19,7 +19,7 @@ export function createUserDB(user) {
   function addUser(user) {
     db.query(
       "INSERT INTO radcheck (username, attribute, op, value) VALUES (?, ?, ?, ?)",
-      ["beb", "Cleartext-Password", ":=", "sam"],
+      [user, "Cleartext-Password", ":=", "sam"],
       (err, result) => {
         console.log(user);
         console.log("User created:", result);
