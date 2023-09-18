@@ -106,15 +106,14 @@ app.post("/access", jsonParser, (req, res) => {
   // User information
   const username = req.body.user;
   const plan = req.body.plan;
+  console.log(username);
 
   // Create user
   createUserDB(username);
 
   //create session for the user
   if (plan === "10min") {
-    // userSessionTimeOut(600, username);
-    // revokeUser(username);
-    bundleLimit(username);
+    userSessionTimeOut(600, username);
   }
   if (plan === "20min") {
     userSessionTimeOut(1200, username);
@@ -146,7 +145,7 @@ app.get("/app", (req, res) => {
   res.redirect("http://192.168.8.155:3000/");
 });
 
-app.post("/balance", async (req, res) => {
+app.post("/balance", jsonParser, async (req, res) => {
   const username = req.body.username;
   QueryBundleBalance(username, res);
 });
