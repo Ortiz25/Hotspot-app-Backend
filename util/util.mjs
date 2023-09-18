@@ -256,7 +256,10 @@ export function QueryBundleBalance(user, res) {
   console.log("Connected to MySQL");
 
   // Query the Mikrotik-Recv-Limit attribute balance
-  const query = `SELECT acctinputoctets, acctoutputoctets FROM radacct WHERE username = ? ORDER BY acctupdatetime DESC
+  const query = `SELECT acctinputoctets, acctoutputoctets FROM radacct
+  WHERE username =  ?
+  GROUP BY username
+  ORDER BY acctupdatetime DESC
   LIMIT 1;`;
 
   db.query(query, [user], async (queryError, results) => {
