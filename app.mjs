@@ -37,7 +37,12 @@ const app = express();
 const port = 8080;
 const hostname = "0.0.0.0";
 
-app.use(cors());
+const corsOptions = {
+  origin: "*",
+  optionsSuccessStatus: 200,
+};
+
+app.use(cors(corsOptions));
 const jsonParser = bodyParser.json();
 
 //////////////////TWILIO//////////////////////
