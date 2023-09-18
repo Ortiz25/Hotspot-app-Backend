@@ -263,6 +263,7 @@ export function QueryBundleBalance(user, res) {
   LIMIT 1;`;
 
   db.query(query, [user], async (queryError, results) => {
+    console.log(user);
     if (queryError) {
       console.error("Error querying radacct:", queryError);
     } else if (results.length > 0) {
