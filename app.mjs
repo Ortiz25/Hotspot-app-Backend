@@ -156,7 +156,7 @@ app.get("/app", (req, res) => {
 });
 
 app.post("/balance", jsonParser, async (req, res) => {
-  const username = req.body.userName;
+  const username = req.body.userNumber;
   console.log(username);
   QueryBundleBalance(username, res);
 });
