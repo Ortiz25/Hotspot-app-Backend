@@ -126,10 +126,6 @@ app.post("/access", jsonParser, (req, res) => {
   res.json({ message: "access created", status: 200 });
 });
 
-app.get("/balance", async (req, res) => {
-  const username = "0726500307";
-  QueryBundleBalance(username, res);
-});
 app.get("/request", jsonParser, (req, res) => {
   const user = "sam";
   createUserDB(user);
@@ -148,6 +144,11 @@ app.get("/", (req, res) => {
 
 app.get("/app", (req, res) => {
   res.redirect("http://192.168.8.155:3000/");
+});
+
+app.post("/balance", async (req, res) => {
+  const username = req.body.username;
+  QueryBundleBalance(username, res);
 });
 
 app.post("/signup", jsonParser, async (req, res) => {
