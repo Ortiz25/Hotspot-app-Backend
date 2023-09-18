@@ -256,7 +256,7 @@ export function QueryBundleBalance(user, res) {
   console.log("Connected to MySQL");
 
   // Query the Mikrotik-Recv-Limit attribute balance
-  const query = `SELECT acctinputoctets, acctoutputoctets FROM radacct WHERE username = ?ORDER BY acctupdatetime DESC
+  const query = `SELECT acctinputoctets, acctoutputoctets FROM radacct WHERE username = ? ORDER BY acctupdatetime DESC
   LIMIT 1;`;
 
   db.query(query, [user], async (queryError, results) => {
@@ -267,7 +267,7 @@ export function QueryBundleBalance(user, res) {
       const outputOctets = results[0].acctoutputoctets;
       console.log(`Mikrotik-Recv-Limit balance for user ${user}:`);
       console.log(`Input Octets: ${inputOctets}`);
-      res.json({ bundleBalance: inputOctets });
+      res.setHeader().json({ bundleBalance: inputOctets });
       console.log(`Output Octets: ${outputOctets}`);
     } else {
       console.log(`No Mikrotik-Recv-Limit balance found for user ${user}`);
