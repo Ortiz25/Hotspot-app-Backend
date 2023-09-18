@@ -1,12 +1,12 @@
 import * as dotenv from "dotenv";
 dotenv.config();
-import mysql from "mysql";
+import mysql from "mysql2";
 import dgram from "dgram";
 import radius from "radius";
 import axios from "axios";
 
 const dbConfig = {
-  host: "192.168.8.191",
+  host: "108.181.203.124",
   user: "node",
   password: process.env.MYSQLDB_PASSWORD,
   database: "radius",
@@ -19,8 +19,9 @@ export function createUserDB(user) {
   function addUser(user) {
     db.query(
       "INSERT INTO radcheck (username, attribute, op, value) VALUES (?, ?, ?, ?)",
-      [`${user}`, "Cleartext-Password", ":=", "sam"],
+      ["beb", "Cleartext-Password", ":=", "sam"],
       (err, result) => {
+        console.log(user);
         console.log("User created:", result);
       }
     );
@@ -40,6 +41,14 @@ export function createUserDB(user) {
     (err, result) => {
       if (err) throw err;
       if (result.length > 0) {
+        console.log("user already exists");
+        db.end((err) => {
+          if (err) {
+            console.error("Error closing the database connection:", err);
+          } else {
+            console.log("Database connection closed");
+          }
+        });
       } else {
         addUser(user);
         db.end((err) => {
@@ -174,7 +183,7 @@ export function revokeUser(user) {
   });
 }
 
-export function bundleLimit(user) {
+export function bundleLimit(limit, user) {
   const db = mysql.createConnection(dbConfig);
   db.connect((err) => {
     if (err) {
@@ -198,21 +207,17 @@ export function bundleLimit(user) {
       // Update the existing Rate Recv entry
       const updateQuery = `UPDATE radreply SET value = ? WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
 
-      db.query(
-        updateQuery,
-        ["10485760", user],
-        (updateError, updateResults) => {
-          if (updateError) {
-            console.error("Error updating radreply:", updateError);
-          } else {
-            console.log(updateResults);
-            console.log(`Session timeout updated for user ${user}`);
-          }
-
-          // Close the MySQL connection
-          db.end();
+      db.query(updateQuery, [limit, user], (updateError, updateResults) => {
+        if (updateError) {
+          console.error("Error updating radreply:", updateError);
+        } else {
+          console.log(updateResults);
+          console.log(`Session timeout updated for user ${user}`);
         }
-      );
+
+        // Close the MySQL connection
+        db.end();
+      });
     } else {
       // Insert a new Recv Limit entry
       console.log(checkResults);

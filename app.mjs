@@ -126,7 +126,9 @@ app.get("/balance", async (req, res) => {
   QueryBundleBalance(username, res);
 });
 app.get("/request", jsonParser, (req, res) => {
-  accessRequest();
+  const user = "sam";
+  createUserDB(user);
+  userSessionTimeOut(1200, user);
   res.json({ message: "ok" });
 });
 
