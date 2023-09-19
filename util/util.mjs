@@ -271,10 +271,11 @@ export function QueryBundleBalance(user, res) {
       const outputOctets = results[0].acctoutputoctets;
       console.log(`Mikrotik-Recv-Limit balance for user ${user}:`);
       console.log(`Input Octets: ${inputOctets}`);
-      res.setHeader().json({ bundleBalance: inputOctets });
+      res.json({ bundleBalance: inputOctets });
       console.log(`Output Octets: ${outputOctets}`);
     } else {
       console.log(`No Mikrotik-Recv-Limit balance found for user ${user}`);
+      res.json({ message: "limit does not exist" });
     }
 
     // Close the MySQL connection
