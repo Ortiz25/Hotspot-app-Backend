@@ -288,14 +288,20 @@ app.post("/resetpassword", jsonParser, async (req, res) => {
   };
   console.log(options);
 
-  sms
-    .send(options)
-    .then((response) => {
-      console.log(response);
-    })
-    .catch((error) => {
-      console.log(error);
-    });
+  // sms
+  //   .send(options)
+  //   .then((response) => {
+  //     console.log(response);
+  //   })
+  //   .catch((error) => {
+  //     console.log(error);
+  //   });
+  try {
+    const result = await sms.send(options);
+    console.log(result);
+  } catch (err) {
+    console.error(err);
+  }
 });
 
 app.post("/passwordrecovery", jsonParser, async (req, res) => {
