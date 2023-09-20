@@ -148,7 +148,7 @@ app.post("/access", jsonParser, (req, res) => {
 
   //create session for the user
   if (plan === "10min") {
-    userSessionTimeOut(600, username);
+    // userSessionTimeOut(600, username);
     bundleLimit(10485760, username);
   }
   if (plan === "20min") {
