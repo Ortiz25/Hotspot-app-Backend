@@ -285,6 +285,7 @@ app.post("/resetpassword", jsonParser, async (req, res) => {
   const options = {
     to: [`+254${user.slice(1)}`],
     message: `Recovery Password: ${newPassword}`,
+    from: "LiveCrib",
   };
   console.log(options);
 
