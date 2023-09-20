@@ -157,7 +157,7 @@ export function revokeUser(user, rateLimit) {
           console.error("Error updating radreply:", updateError);
         } else {
           console.log(updateResults);
-          console.log(`Session timeout updated for user ${user}`);
+          console.log(`Mikrotik Rate Limit added updated for user ${user}`);
         }
 
         // Close the MySQL connection
@@ -173,7 +173,7 @@ export function revokeUser(user, rateLimit) {
           console.error("Error inserting radreply:", insertError);
         } else {
           console.log(insertResults);
-          console.log(`Session timeout added for user ${user}`);
+          console.log(`Mikrotik Rate Limit added for user ${user}`);
         }
 
         // Close the MySQL connection
@@ -212,7 +212,7 @@ export function bundleLimit(bundle, user) {
           console.error("Error updating radreply:", updateError);
         } else {
           console.log(updateResults);
-          console.log(`Session timeout updated for user ${user}`);
+          console.log(`Mikrotik-Recv-Limit updated for user ${user}`);
         }
 
         // Close the MySQL connection
@@ -228,7 +228,7 @@ export function bundleLimit(bundle, user) {
           console.error("Error inserting radreply:", insertError);
         } else {
           console.log(insertResults);
-          console.log(`Session timeout added for user ${user}`);
+          console.log(`Mikrotik-Recv-Limit added for user ${user}`);
         }
 
         // Close the MySQL connection
