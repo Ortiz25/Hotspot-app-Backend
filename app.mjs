@@ -112,28 +112,8 @@ const addsSchema = new mongoose.Schema({
 const Add = mongoose.model("Add", addsSchema);
 
 ///////////////////////////////////////////////////////////
-app.post("/access", jsonParser, (req, res) => {
-  // User information
-  const username = req.body.user;
-  const plan = req.body.plan;
-  console.log(username);
 
-  // Create user
-  createUserDB(username);
-
-  //create session for the user
-  if (plan === "10min") {
-    userSessionTimeOut(600, username);
-  }
-  if (plan === "20min") {
-    userSessionTimeOut(1200, username);
-  }
-  if (plan === "30min") {
-    userSessionTimeOut(1800, username);
-  }
-
-  res.json({ message: "access created", status: 200 });
-});
+//////////////////// GET REQUESTS//////////////////////////
 
 app.get("/request", jsonParser, (req, res) => {
   const user = "sam";
@@ -153,6 +133,32 @@ app.get("/", (req, res) => {
 
 app.get("/app", (req, res) => {
   res.redirect("http://192.168.8.155:3000/");
+});
+
+/////////////////// POST REQUESTS ///////////////////////////
+
+app.post("/access", jsonParser, (req, res) => {
+  // User information
+  const username = req.body.user;
+  const plan = req.body.plan;
+  console.log(username);
+
+  // Create user
+  createUserDB(username);
+
+  //create session for the user
+  if (plan === "10min") {
+    userSessionTimeOut(600, username);
+    bundleLimit(10485760, username);
+  }
+  if (plan === "20min") {
+    userSessionTimeOut(1200, username);
+  }
+  if (plan === "30min") {
+    userSessionTimeOut(1800, username);
+  }
+
+  res.json({ message: "access created", status: 200 });
 });
 
 app.post("/balance", jsonParser, async (req, res) => {

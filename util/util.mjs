@@ -128,7 +128,7 @@ export function userSessionTimeOut(accessTimeSeconds, user) {
   });
 }
 
-export function revokeUser(user) {
+export function revokeUser(user, rateLimit) {
   const db = mysql.createConnection(dbConfig);
   db.connect((err) => {
     if (err) {
@@ -152,7 +152,7 @@ export function revokeUser(user) {
       // Update the existing Rate Limit entry
       const updateQuery = `UPDATE radreply SET value = ? WHERE username = ? AND attribute = 'Mikrotik-Rate-Limit'`;
 
-      db.query(updateQuery, ["5M/5M", user], (updateError, updateResults) => {
+      db.query(updateQuery, [rateLimit, user], (updateError, updateResults) => {
         if (updateError) {
           console.error("Error updating radreply:", updateError);
         } else {
@@ -168,7 +168,7 @@ export function revokeUser(user) {
       console.log(checkResults);
       const insertQuery = `INSERT INTO radreply (username, attribute, op, value) VALUES (?, 'Mikrotik-Rate-Limit', ':=', ?)`;
 
-      db.query(insertQuery, [user, "5M/5M"], (insertError, insertResults) => {
+      db.query(insertQuery, [user, rateLimit], (insertError, insertResults) => {
         if (insertError) {
           console.error("Error inserting radreply:", insertError);
         } else {
@@ -183,7 +183,7 @@ export function revokeUser(user) {
   });
 }
 
-export function bundleLimit(limit, user) {
+export function bundleLimit(bundle, user) {
   const db = mysql.createConnection(dbConfig);
   db.connect((err) => {
     if (err) {
@@ -207,7 +207,7 @@ export function bundleLimit(limit, user) {
       // Update the existing Rate Recv entry
       const updateQuery = `UPDATE radreply SET value = ? WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
 
-      db.query(updateQuery, [limit, user], (updateError, updateResults) => {
+      db.query(updateQuery, [bundle, user], (updateError, updateResults) => {
         if (updateError) {
           console.error("Error updating radreply:", updateError);
         } else {
@@ -223,21 +223,17 @@ export function bundleLimit(limit, user) {
       console.log(checkResults);
       const insertQuery = `INSERT INTO radreply (username, attribute, op, value) VALUES (?, 'Mikrotik-Recv-Limit', '=', ?)`;
 
-      db.query(
-        insertQuery,
-        [user, "10485760"],
-        (insertError, insertResults) => {
-          if (insertError) {
-            console.error("Error inserting radreply:", insertError);
-          } else {
-            console.log(insertResults);
-            console.log(`Session timeout added for user ${user}`);
-          }
-
-          // Close the MySQL connection
-          db.end();
+      db.query(insertQuery, [user, bundle], (insertError, insertResults) => {
+        if (insertError) {
+          console.error("Error inserting radreply:", insertError);
+        } else {
+          console.log(insertResults);
+          console.log(`Session timeout added for user ${user}`);
         }
-      );
+
+        // Close the MySQL connection
+        db.end();
+      });
     }
   });
 }
