@@ -163,7 +163,7 @@ app.post("/access", jsonParser, (req, res) => {
 
 app.post("/balance", jsonParser, async (req, res) => {
   const username = req.body.userName;
-  console.log(req.body);
+  console.log("username", req.body.userName);
   QueryBundleBalance(username, res);
 });
 
@@ -286,6 +286,7 @@ app.post("/resetpassword", jsonParser, async (req, res) => {
     to: [`+254${user.slice(1)}`],
     message: `Recovery Password: ${newPassword}`,
   };
+  console.log(options);
 
   sms
     .send(options)
