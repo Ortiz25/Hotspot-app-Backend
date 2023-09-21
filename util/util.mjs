@@ -254,7 +254,6 @@ export function QueryBundleBalance(user, res) {
   // Query the Mikrotik-Recv-Limit attribute balance
   const query = `SELECT acctinputoctets, acctoutputoctets FROM radacct
   WHERE username =  ?
-  GROUP BY username
   ORDER BY acctstarttime DESC
   LIMIT 1;`;
 
