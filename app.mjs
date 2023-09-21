@@ -291,6 +291,7 @@ app.post("/resetpassword", jsonParser, async (req, res) => {
 
   try {
     const result = await sms.send(options);
+    result();
     console.log(result);
   } catch (err) {
     console.error(err);
