@@ -255,7 +255,7 @@ export function QueryBundleBalance(user, res) {
   const query = `SELECT acctinputoctets, acctoutputoctets FROM radacct
   WHERE username =  ?
   GROUP BY username
-  ORDER BY acctstarttime ASC
+  ORDER BY acctstarttime DESC
   LIMIT 1;`;
 
   db.query(query, [user], async (queryError, results) => {
