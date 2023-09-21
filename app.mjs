@@ -19,7 +19,7 @@ import {
 } from "./util/util.mjs";
 
 const credentials = {
-  apiKey: process.env.AFRICASTALKING_TOKEN,
+  apiKey: "7ad89d9fa7ad7abf1cd86c3e8ffe0e487605e88582ef2f7914dbbd2ca540f560",
   username: "livecrib",
 };
 
