@@ -263,6 +263,7 @@ export function QueryBundleBalance(user, res) {
     if (queryError) {
       console.error("Error querying radacct:", queryError);
     } else if (results.length > 0) {
+      console.log(results);
       const inputOctets = results[0].acctinputoctets;
       const outputOctets = results[0].acctoutputoctets;
       console.log(`Mikrotik-Recv-Limit balance for user ${user}:`);
