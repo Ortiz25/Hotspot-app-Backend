@@ -136,9 +136,7 @@ app.get("/app", (req, res) => {
 });
 
 app.get("/auth", jsonParser, (req, res) => {
-  // res.json({ message: "true" });
   const mac = req.query.mac;
-  console.log(data);
   res.redirect("https://hotspot-frontend-app-5f616.firebaseapp.com/");
 });
 
