@@ -135,7 +135,7 @@ app.get("/app", (req, res) => {
   res.redirect("http://192.168.8.155:3000/");
 });
 
-app.get("/auth", jsonParser, (req, res) => {
+app.post("/auth", jsonParser, (req, res) => {
   // res.json({ message: "true" });
   res.redirect("https://hotspot-frontend-app-5f616.firebaseapp.com/");
 });
