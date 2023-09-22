@@ -136,8 +136,8 @@ app.get("/app", (req, res) => {
 });
 
 app.get("/auth", jsonParser, (req, res) => {
-  res.json({ message: "true" });
-  // res.redirect("https://hotspot-frontend-app-5f616.firebaseapp.com/");
+  // res.json({ message: "true" });
+  res.redirect("https://hotspot-frontend-app-5f616.firebaseapp.com/");
 });
 
 /////////////////// POST REQUESTS ///////////////////////////
