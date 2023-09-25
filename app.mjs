@@ -55,6 +55,14 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use((req, res, next) => {
+  // Check if the request is for a specific route(s)
+  if (req.url === "/auth") {
+    req.headers["x-forwarded-proto"] = "http";
+  }
+  next();
+});
+
 //////////////////TWILIO//////////////////////
 const client = twilio(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
 //////////////////////////////////////////////
