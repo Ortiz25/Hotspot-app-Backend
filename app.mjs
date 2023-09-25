@@ -58,9 +58,11 @@ app.use((req, res, next) => {
 app.use((req, res, next) => {
   // Check if the request is for a specific route(s)
   if (req.url === "/auth") {
-    req.headers["x-forwarded-proto"] = "http";
+    if (req.headers["x-forwarded-proto"] === "http") {
+      console.log("true");
+      next();
+    }
   }
-  next();
 });
 
 //////////////////TWILIO//////////////////////
