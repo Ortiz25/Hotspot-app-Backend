@@ -48,21 +48,15 @@ const corsOptions = {
 
 app.use(cors());
 const jsonParser = bodyParser.json();
-// app.use((req, res, next) => {
-//   res.setHeader("Access-Control-Allow-Origin", "*");
-//   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
-//   res.setHeader("Access-Control-Allow-Methods", "Content-Type");
-//   next();
-// });
-
 app.use((req, res, next) => {
-  // Check if the request is for a specific route(s)
-  if (req.url === "/auth") {
-    if (req.headers["x-forwarded-proto"] === "http") {
-      console.log("true");
-      next();
-    }
-  }
+  res.setHeader("Access-Control-Allow-Origin", "*");
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "Content-Type",
+    "Authorization"
+  );
+  next();
 });
 
 //////////////////TWILIO//////////////////////
