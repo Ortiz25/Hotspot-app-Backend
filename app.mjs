@@ -47,7 +47,7 @@ const corsOptions = {
   optionsSuccessStatus: 200,
 };
 
-app.use(cors());
+app.use(cors(corsOptions));
 const jsonParser = bodyParser.json();
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", "*");
