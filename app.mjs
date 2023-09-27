@@ -42,6 +42,7 @@ const corsOptions = {
     "https://hotspot-frontend-app-5f616.firebaseapp.com",
     "http://localhost:3000",
     "http://108.181.203.124:3000",
+    "https://www.livecrib.rent/",
   ],
   optionsSuccessStatus: 200,
 };
