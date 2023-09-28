@@ -153,7 +153,9 @@ app.post("/access", jsonParser, (req, res) => {
   // User information
   const username = req.body.user;
   const plan = req.body.plan;
-  console.log(username);
+  const ip = req.body.ip;
+  const mac = req.body.mac;
+  console.log(username, mac, ip);
 
   // Create user
   createUserDB(username);
