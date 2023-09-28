@@ -59,6 +59,16 @@ app.use((req, res, next) => {
   );
   next();
 });
+app.use((req, res, next) => {
+  req.setHeader("Access-Control-Allow-Origin", "*");
+  req.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
+  req.setHeader(
+    "Access-Control-Allow-Methods",
+    "Content-Type",
+    "Authorization"
+  );
+  next();
+});
 
 //////////////////TWILIO//////////////////////
 const client = twilio(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
