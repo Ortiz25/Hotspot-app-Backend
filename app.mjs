@@ -201,6 +201,7 @@ app.post("/signup", jsonParser, async (req, res) => {
 });
 
 app.post("/login", jsonParser, async (req, res) => {
+  console.log(req.body.number);
   const foundUser = await User.findOne({ number: req.body.number }).exec();
   if (!foundUser) {
     res.json({ message: "user does not exist", status: 404 });
