@@ -186,6 +186,7 @@ app.post("/signup", async (req, res) => {
     fullName: "",
     dob: "",
   };
+  console.log(signData);
   // const newUser = new User (loginData)
   // await newUser.save()
   const numberExist = await User.findOne({ number: req.body.number });
