@@ -120,14 +120,14 @@ const Add = mongoose.model("Add", addsSchema);
 
 //////////////////// GET REQUESTS//////////////////////////
 
-app.get("/request", jsonParser, (req, res) => {
+app.get("/request", (req, res) => {
   const user = "sam";
   createUserDB(user);
   userSessionTimeOut(1200, user);
   res.json({ message: "ok" });
 });
 
-app.get("/adds", jsonParser, async (req, res) => {
+app.get("/adds", async (req, res) => {
   const adds = await Add.find();
   res.json(adds);
 });
@@ -140,7 +140,7 @@ app.get("/app", (req, res) => {
   res.redirect("http://192.168.8.155:3000/");
 });
 
-app.get("/auth", jsonParser, (req, res) => {
+app.get("/auth", (req, res) => {
   const mac = req.query.mac;
 
   // res.redirect("https://hotspot-frontend-app-5f616.firebaseapp.com/");
@@ -149,7 +149,7 @@ app.get("/auth", jsonParser, (req, res) => {
 
 /////////////////// POST REQUESTS ///////////////////////////
 
-app.post("/access", jsonParser, (req, res) => {
+app.post("/access", (req, res) => {
   // User information
   const username = req.body.user;
   const plan = req.body.plan;
@@ -175,13 +175,13 @@ app.post("/access", jsonParser, (req, res) => {
   res.json({ message: "access created", status: 200 });
 });
 
-app.post("/balance", jsonParser, async (req, res) => {
+app.post("/balance", async (req, res) => {
   const username = req.body.userName;
   console.log("username", req.body.userName);
   QueryBundleBalance(username, res);
 });
 
-app.post("/signup", jsonParser, async (req, res) => {
+app.post("/signup", async (req, res) => {
   const signData = {
     number: req.body.number,
     password: req.body.password,
@@ -223,7 +223,7 @@ app.post("/login", async (req, res) => {
   }
 });
 
-app.post("/profile", jsonParser, async (req, res) => {
+app.post("/profile", async (req, res) => {
   let greet;
   jwt.verify(
     req.body.token,
@@ -261,7 +261,7 @@ app.post("/profile", jsonParser, async (req, res) => {
   );
 });
 
-app.post("/editprofile", jsonParser, async (req, res) => {
+app.post("/editprofile", async (req, res) => {
   const user = jwt.verify(req.body.token, process.env.SECRET_KEY);
 
   const foundUser = await User.findOneAndUpdate(
@@ -276,7 +276,7 @@ app.post("/editprofile", jsonParser, async (req, res) => {
   res.json({ message: "profile updated" });
 });
 
-app.post("/resetpassword", jsonParser, async (req, res) => {
+app.post("/resetpassword", async (req, res) => {
   const user = req.body.number;
   const newPassword = Math.random().toString(36).slice(-8);
   const foundUser = await User.findOne({ number: user }).exec();
@@ -313,7 +313,7 @@ app.post("/resetpassword", jsonParser, async (req, res) => {
   }
 });
 
-app.post("/passwordrecovery", jsonParser, async (req, res) => {
+app.post("/passwordrecovery", async (req, res) => {
   const { resetPassword, newPassword } = req.body;
   const foundUser = await User.findOne({ password: resetPassword }).exec();
   if (!foundUser) {
