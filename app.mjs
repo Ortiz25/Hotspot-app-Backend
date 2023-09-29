@@ -47,6 +47,7 @@ const corsOptions = {
 };
 
 app.use(cors());
+app.use(bodyParser.urlencoded({ extended: false }));
 const jsonParser = bodyParser.json();
 // app.use((req, res, next) => {
 //   res.setHeader("Access-Control-Allow-Origin", "*");
@@ -200,8 +201,8 @@ app.post("/signup", jsonParser, async (req, res) => {
   res.json({ message: "login successful" });
 });
 
-app.post("/login", jsonParser, async (req, res) => {
-  console.log(req.body.number);
+app.post("/login", async (req, res) => {
+  console.log(req.body.number, req.body);
   const foundUser = await User.findOne({ number: req.body.number }).exec();
   if (!foundUser) {
     res.json({ message: "user does not exist", status: 404 });
