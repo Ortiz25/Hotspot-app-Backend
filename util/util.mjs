@@ -12,7 +12,7 @@ const dbConfig = {
   database: "radius",
   port: 3306,
 };
-radius.add_dictionary("../util/dictionary.Mikrotik");
+radius.add_dictionary("../util/");
 
 export function createUserDB(user) {
   const db = mysql.createConnection(dbConfig);
