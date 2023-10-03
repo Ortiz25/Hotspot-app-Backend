@@ -279,7 +279,7 @@ export function QueryBundleBalance(user, res) {
   });
 }
 
-export function accessRequest(userName) {
+export function accessRequest(userName, mac) {
   const server = dgram.createSocket("udp4");
 
   const packetAccess = radius.encode({
@@ -290,6 +290,7 @@ export function accessRequest(userName) {
       ["User-Name", `${userName}`],
       ["User-Password", "sam"],
       ["Service-Type", "Login-User"],
+      ["Calling-Station-Id", `${mac}`],
     ],
   });
 
