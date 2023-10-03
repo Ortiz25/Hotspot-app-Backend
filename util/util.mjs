@@ -294,7 +294,7 @@ export function accessRequest(userName, mac) {
     ],
   });
 
-  const serverIP = "108.181.203.124 ";
+  const serverIP = "108.181.203.124";
   const serverPortAccess = 1812;
 
   server.send(packetAccess, serverPortAccess, serverIP, (error) => {
