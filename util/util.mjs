@@ -291,6 +291,9 @@ export function accessRequest(userName, mac) {
       ["User-Password", "sam"],
       ["Service-Type", "Login-User"],
       ["Calling-Station-Id", `${mac}`],
+      ["Nas-Identifier", "Mikrotik"],
+      ["Nas-Port-Type", "Wireless-802.11"],
+      ["Nas-Port-Id", "bridge-lab"],
     ],
   });
 

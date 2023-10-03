@@ -157,7 +157,7 @@ app.post("/access", (req, res) => {
   createUserDB(userName);
 
   // Request access from server
-  accessRequest(userName);
+  accessRequest(userName, mac);
 
   //create session for the user
   if (plan === "10min") {
