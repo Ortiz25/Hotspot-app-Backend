@@ -12,6 +12,7 @@ const dbConfig = {
   database: "radius",
   port: 3306,
 };
+radius.add_dictionary("../util/dictionary.Mikrotik");
 
 export function createUserDB(user) {
   const db = mysql.createConnection(dbConfig);
@@ -291,6 +292,7 @@ export function accessRequest(userName, mac) {
       ["User-Password", "sam"],
       ["Service-Type", "Login-User"],
       ["Calling-Station-Id", `${mac}`],
+      ["Nas-Identifier", 32, "Mikrotik"],
     ],
   });
 
