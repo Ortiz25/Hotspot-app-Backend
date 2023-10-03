@@ -4,6 +4,7 @@ import mysql from "mysql2";
 import dgram from "dgram";
 import radius from "radius";
 import axios from "axios";
+import path from "path";
 
 const dbConfig = {
   host: "108.181.203.124",
@@ -12,7 +13,6 @@ const dbConfig = {
   database: "radius",
   port: 3306,
 };
-radius.add_dictionary("mikrotik.Dic");
 
 export function createUserDB(user) {
   const db = mysql.createConnection(dbConfig);
