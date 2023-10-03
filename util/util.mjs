@@ -292,7 +292,6 @@ export function accessRequest(userName, mac) {
       ["User-Password", "sam"],
       ["Service-Type", "Login-User"],
       ["Calling-Station-Id", `${mac}`],
-      ["Nas-Identifier", 32, "Mikrotik"],
     ],
   });
 
