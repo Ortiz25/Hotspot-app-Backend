@@ -291,7 +291,6 @@ export function accessRequest(userName, mac) {
       ["User-Password", "sam"],
       ["Service-Type", "Login-User"],
       ["Calling-Station-Id", `${mac}`],
-      ["Nas-Port-Id", "bridge-lab"],
     ],
   });
 
