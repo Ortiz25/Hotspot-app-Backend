@@ -147,14 +147,17 @@ app.get("/auth", (req, res) => {
 
 app.post("/access", (req, res) => {
   // User information
-  const username = req.body.user;
+  const userName = req.body.user;
   const plan = req.body.plan;
   const ip = req.body.ip;
   const mac = req.body.mac;
-  console.log(username, mac, ip);
+  console.log(userName, mac, ip);
 
-  // Create user
-  createUserDB(username);
+  // Create user in DB
+  createUserDB(userName);
+
+  // Request access from server
+  accessRequest(userName);
 
   //create session for the user
   if (plan === "10min") {

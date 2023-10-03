@@ -279,36 +279,29 @@ export function QueryBundleBalance(user, res) {
   });
 }
 
-export function accessRequest() {
-  // Create a UDP socket
+export function accessRequest(userName) {
   const server = dgram.createSocket("udp4");
 
-  // Define the RADIUS request packet as a Buffer
   const packetAccess = radius.encode({
     code: "Access-Request",
     secret: "test123",
-    AuthType: "HTTP-PAP",
 
     attributes: [
-      ["User-Name", "0726500307"],
+      ["User-Name", `${userName}`],
       ["User-Password", "sam"],
       ["Service-Type", "Login-User"],
     ],
   });
 
-  // Replace '127.0.0.1' and 1812 with the RADIUS server's IP address and port
-  const serverIP = "192.168.8.191";
+  const serverIP = "108.181.203.124 ";
   const serverPortAccess = 1812;
 
-  // Send the RADIUS request packet to the RADIUS server
   server.send(packetAccess, serverPortAccess, serverIP, (error) => {
     if (error) {
       console.error("Error sending RADIUS request:", error);
     } else {
       console.log("RADIUS Access request sent successfully.");
     }
-
-    // Close the UDP socket when done
     server.close();
   });
 }
