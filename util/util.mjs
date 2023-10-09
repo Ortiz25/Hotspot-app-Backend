@@ -1,10 +1,6 @@
 import * as dotenv from "dotenv";
 dotenv.config();
 import mysql from "mysql2";
-import dgram from "dgram";
-import radius from "radius";
-import axios from "axios";
-import path from "path";
 
 const dbConfig = {
   host: "108.181.203.124",
@@ -17,12 +13,12 @@ const dbConfig = {
 export function createUserDB(user) {
   const db = mysql.createConnection(dbConfig);
 
+  // add user function
   function addUser(user) {
     db.query(
       "INSERT INTO radcheck (username, attribute, op, value) VALUES (?, ?, ?, ?)",
-      [user, "Cleartext-Password", ":=", "sam"],
+      [user, "Cleartext-Password", ":=", "password"],
       (err, result) => {
-        console.log(user);
         console.log("User created:", result);
       }
     );
@@ -36,13 +32,13 @@ export function createUserDB(user) {
     console.log("Connected to the database");
   });
 
+  // Check whether user exists
   db.query(
     "SELECT * FROM radcheck WHERE username = ?",
     [user],
     (err, result) => {
       if (err) throw err;
       if (result.length > 0) {
-        console.log("user already exists");
         db.end((err) => {
           if (err) {
             console.error("Error closing the database connection:", err);
@@ -100,13 +96,11 @@ export function userSessionTimeOut(accessTimeSeconds, user) {
               console.log(updateResults);
               console.log(`Session timeout updated for user ${user}`);
             }
-
-            // Close the MySQL connection
             db.end();
           }
         );
       } else {
-        // Insert a new session timeout entry
+        // Insert a new session timeout
         const insertQuery = `INSERT INTO radreply (username, attribute, op, value) VALUES (?, 'Session-Timeout', ':=', ?)`;
 
         db.query(
@@ -119,8 +113,6 @@ export function userSessionTimeOut(accessTimeSeconds, user) {
               console.log(insertResults);
               console.log(`Session timeout added for user ${user}`);
             }
-
-            // Close the MySQL connection
             db.end();
           }
         );
@@ -259,11 +251,9 @@ export function QueryBundleBalance(user, res) {
   LIMIT 1;`;
 
   db.query(query, [user], async (queryError, results) => {
-    console.log(user);
     if (queryError) {
       console.error("Error querying radacct:", queryError);
     } else if (results.length > 0) {
-      console.log(results);
       const inputOctets = results[0].acctinputoctets;
       const outputOctets = results[0].acctoutputoctets;
       console.log(`Mikrotik-Recv-Limit balance for user ${user}:`);
@@ -275,80 +265,6 @@ export function QueryBundleBalance(user, res) {
       res.json({ message: "limit does not exist" });
     }
 
-    // Close the MySQL connection
     db.end();
   });
 }
-
-export function accessRequest(userName, mac) {
-  const server = dgram.createSocket("udp4");
-
-  const packetAccess = radius.encode({
-    code: "Access-Request",
-    secret: "test123",
-
-    attributes: [
-      ["User-Name", `${userName}`],
-      ["User-Password", "sam"],
-      ["Service-Type", "Login-User"],
-      ["Calling-Station-Id", `${mac}`],
-    ],
-  });
-
-  const serverIP = "108.181.203.124";
-  const serverPortAccess = 1812;
-
-  server.send(packetAccess, serverPortAccess, serverIP, (error) => {
-    if (error) {
-      console.error("Error sending RADIUS request:", error);
-    } else {
-      console.log("RADIUS Access request sent successfully.");
-    }
-    server.close();
-  });
-}
-
-// Create a function to perform HTTP-PAP authentication
-export async function httpPapAuth(user) {
-  try {
-    // Define FreeRADIUS server details
-    const radiusServerURL = "http://192.168.8.191:1812"; // Replace with your RADIUS server URL
-    const radiusSharedSecret = "test123"; // Replace with your RADIUS server shared secret
-    // Create an Axios instance with RADIUS server details
-    const axiosInstance = axios.create({
-      baseURL: radiusServerURL,
-      timeout: 5000, // Adjust the timeout as needed
-      headers: {
-        "Content-Type": "application/x-www-form-urlencoded",
-      },
-    });
-
-    // Build the RADIUS Access-Request packet with PAP credentials
-    const radiusPacket = radius.encode({
-      "User-Name": user.username,
-      "User-Password": user.password,
-      "NAS-IP-Address": "192.168.8.153", // Replace with your NAS IP address
-      "NAS-Port": 0, // Replace with your NAS port number
-    });
-
-    // Send the RADIUS Access-Request packet with PAP authentication
-    const response = await axiosInstance.post("/rad_auth", radiusPacket, {
-      auth: {
-        username: "radclient",
-        password: radiusSharedSecret,
-      },
-    });
-
-    // Check the response for success or failure
-    if (response.status === 200 && response.data.code === "Access-Accept") {
-      console.log(`Authentication succeeded for user: ${username}`);
-    } else {
-      console.error(`Authentication failed for user: ${username}`);
-    }
-  } catch (error) {
-    console.error(`Error during authentication: ${error.message}`);
-  }
-}
-
-// Call the authentication function
-// httpPapAuth();

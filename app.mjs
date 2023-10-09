@@ -11,44 +11,32 @@ import AfricasTalking from "africastalking";
 import {
   createUserDB,
   userSessionTimeOut,
-  revokeUser,
   bundleLimit,
   QueryBundleBalance,
-  accessRequest,
 } from "./util/util.mjs";
+
+const app = express();
+const port = 3000;
+const hostname = "0.0.0.0";
+
+app.use(cors(corsOptions));
+app.use(bodyParser.json());
+
+/////////// Africa Is Talking /////////////////
 
 const credentials = {
   apiKey: process.env.AFRICASTALKING_TOKEN,
   username: "livecrib",
 };
 
-const dbConfig = {
-  host: "192.168.8.191",
-  user: "node",
-  password: "m0t0m0t0",
-  database: "radius",
-  port: 3306,
-};
-
 const sms = AfricasTalking(credentials).SMS;
+///////////////////////////////////////////////
 
-const app = express();
-const port = 3000;
-const hostname = "0.0.0.0";
-
-app.use(cors());
-// app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
-app.use((req, res, next) => {
-  req.setHeader("Access-Control-Allow-Origin", "*");
-  req.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE");
-  req.setHeader(
-    "Access-Control-Allow-Methods",
-    "Content-Type",
-    "Authorization"
-  );
-  next();
-});
+const corsOptions = {
+  origin: "*",
+  credentials: true, //access-control-allow-credentials:true
+  optionSuccessStatus: 200,
+};
 
 //////////////////TWILIO//////////////////////
 const client = twilio(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
@@ -85,8 +73,6 @@ async function main() {
   await mongoose.connect(
     "mongodb+srv://samueldeya:m0t0m0t0@cluster0.qd7gjoz.mongodb.net/users-mobile-app?retryWrites=true&w=majority"
   );
-
-  // use `await mongoose.connect('mongodb://user:password@127.0.0.1:27017/test');` if your database has auth enabled
 }
 const userSchema = new mongoose.Schema({
   number: String,
@@ -110,13 +96,6 @@ const Add = mongoose.model("Add", addsSchema);
 
 //////////////////// GET REQUESTS//////////////////////////
 
-app.get("/request", (req, res) => {
-  const user = "sam";
-  createUserDB(user);
-  userSessionTimeOut(1200, user);
-  res.json({ message: "ok" });
-});
-
 app.get("/adds", async (req, res) => {
   const adds = await Add.find();
   res.json(adds);
@@ -126,43 +105,26 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-app.get("/app", (req, res) => {
-  res.redirect("http://192.168.8.155:3000/");
-});
-
-app.get("/auth", (req, res) => {
-  const mac = req.query.mac;
-
-  // res.redirect("https://hotspot-frontend-app-5f616.firebaseapp.com/");
-  res.json({ message: "OK" });
-});
-
 /////////////////// POST REQUESTS ///////////////////////////
 
 app.post("/access", (req, res) => {
   // User information
-  const userName = req.body.user;
+  const username = req.body.user;
   const plan = req.body.plan;
-  const ip = req.body.ip;
-  const mac = req.body.mac;
-  console.log(userName, mac, ip);
 
   // Create user in DB
-  createUserDB(userName);
-
-  // Request access from server
-  accessRequest(userName, mac);
+  createUserDB(username);
 
   //create session for the user
   if (plan === "10min") {
-    // userSessionTimeOut(600, username);
-    bundleLimit(10485760, userName);
+    userSessionTimeOut(600, username);
+    // bundleLimit(10485760, userName);
   }
   if (plan === "20min") {
-    userSessionTimeOut(1200, userName);
+    userSessionTimeOut(1200, username);
   }
   if (plan === "30min") {
-    userSessionTimeOut(1800, userName);
+    userSessionTimeOut(1800, username);
   }
 
   res.json({ message: "access created", status: 200 });
@@ -196,7 +158,6 @@ app.post("/signup", async (req, res) => {
 });
 
 app.post("/login", async (req, res) => {
-  console.log(req.body.number, req.body);
   const foundUser = await User.findOne({ number: req.body.number }).exec();
   if (!foundUser) {
     res.json({ message: "user does not exist", status: 404 });
@@ -296,7 +257,6 @@ app.post("/resetpassword", async (req, res) => {
     message: `Recovery Password: ${newPassword}`,
     from: "LiveCrib",
   };
-  console.log(options);
 
   try {
     const result = await sms.send(options);
