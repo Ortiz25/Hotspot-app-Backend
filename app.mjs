@@ -5,9 +5,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import nodemailer from "nodemailer";
-import twilio from "twilio";
-import AfricasTalking from "africastalking";
+import Africastalking from "africastalking";
 import {
   createUserDB,
   userSessionTimeOut,
@@ -16,20 +14,19 @@ import {
 } from "./util/util.mjs";
 
 const app = express();
-const port = 3000;
+const port = 8080;
 const hostname = "0.0.0.0";
 
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(bodyParser.json());
 
 /////////// Africa Is Talking /////////////////
-
 const credentials = {
   apiKey: process.env.AFRICASTALKING_TOKEN,
   username: "livecrib",
 };
 
-const sms = AfricasTalking(credentials).SMS;
+const sms = Africastalking(credentials).SMS;
 ///////////////////////////////////////////////
 
 const corsOptions = {
@@ -37,33 +34,6 @@ const corsOptions = {
   credentials: true, //access-control-allow-credentials:true
   optionSuccessStatus: 200,
 };
-
-//////////////////TWILIO//////////////////////
-const client = twilio(process.env.ACCOUNT_SID, process.env.AUTH_TOKEN);
-//////////////////////////////////////////////
-
-//////////////////nodemailer//////////////////
-const transporter = nodemailer.createTransport({
-  host: process.env.MAILJET_HOST,
-  port: 465,
-  secure: true,
-  auth: {
-    user: process.env.MAILJET_USER,
-    pass: process.env.MAILJET_PASSWORD,
-  },
-});
-async function sender() {
-  // send mail with defined transport object
-  const info = await transporter.sendMail({
-    from: '"Fred Foo 👻" samueldeya@outlook.com', // sender address
-    to: "samueldeya@gmail.com", // list of receivers
-    subject: "Hello ✔", // Subject line
-    text: "Hello world?", // plain text body
-    html: "<b>Hello world?</b>", // html body
-  });
-
-  console.log("Message sent: %s", info.messageId);
-}
 /////////////////////////////////////////////
 
 /////////////////DB///////////////////////////
@@ -255,16 +225,17 @@ app.post("/resetpassword", async (req, res) => {
   const options = {
     to: [`+254${user.slice(1)}`],
     message: `Recovery Password: ${newPassword}`,
-    from: "LiveCrib",
   };
 
-  try {
-    const result = await sms.send(options);
-    result();
-    console.log(result);
-  } catch (err) {
-    console.error(err);
+  async function sendSMS() {
+    try {
+      const result = await sms.send(options);
+      console.log(result);
+    } catch (err) {
+      console.error(err);
+    }
   }
+  sendSMS();
 });
 
 app.post("/passwordrecovery", async (req, res) => {
