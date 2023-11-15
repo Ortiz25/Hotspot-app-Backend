@@ -14,7 +14,7 @@ import {
 } from "./util/util.mjs";
 
 const app = express();
-const port = 8080;
+const port = 8000;
 const hostname = "0.0.0.0";
 
 app.use(cors());
