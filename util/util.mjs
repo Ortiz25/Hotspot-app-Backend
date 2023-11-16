@@ -9,10 +9,9 @@ const dbConfig = {
   database: "radius",
   port: 3306,
 };
+const db = mysql.createConnection(dbConfig);
 
 export function createUserDB(user) {
-  const db = mysql.createConnection(dbConfig);
-
   // add user function
   function addUser(user) {
     db.query(
@@ -61,8 +60,6 @@ export function createUserDB(user) {
 }
 
 export function userSessionTimeOut(accessTimeSeconds, user) {
-  const db = mysql.createConnection(dbConfig);
-
   // Connect to the MySQL database
   db.connect((err) => {
     if (err) {
@@ -122,7 +119,6 @@ export function userSessionTimeOut(accessTimeSeconds, user) {
 }
 
 export function revokeUser(user, rateLimit) {
-  const db = mysql.createConnection(dbConfig);
   db.connect((err) => {
     if (err) {
       console.error("Database connection error:", err);
@@ -177,7 +173,6 @@ export function revokeUser(user, rateLimit) {
 }
 
 export function bundleLimit(bundle, user) {
-  const db = mysql.createConnection(dbConfig);
   db.connect((err) => {
     if (err) {
       console.error("Database connection error:", err);
@@ -232,8 +227,6 @@ export function bundleLimit(bundle, user) {
 }
 
 export function QueryBundleBalance(user, res) {
-  const db = mysql.createConnection(dbConfig);
-
   // Connect to the MySQL database
   db.connect((err) => {
     if (err) {

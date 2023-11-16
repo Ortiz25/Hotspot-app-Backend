@@ -86,15 +86,17 @@ app.post("/access", (req, res) => {
   createUserDB(username);
 
   //create session for the user
-  if (plan === "10min") {
-    userSessionTimeOut(600, username);
-    // bundleLimit(10485760, userName);
+  if (plan === "10MB") {
+    // userSessionTimeOut(600, username);
+    bundleLimit(10485760, username);
   }
-  if (plan === "20min") {
-    userSessionTimeOut(1200, username);
+  if (plan === "20MB") {
+    // userSessionTimeOut(1200, username);
+    bundleLimit(10485760, username);
   }
-  if (plan === "30min") {
-    userSessionTimeOut(1800, username);
+  if (plan === "30MB") {
+    // userSessionTimeOut(1800, username);
+    bundleLimit(10485760, username);
   }
 
   res.json({ message: "access created", status: 200 });
