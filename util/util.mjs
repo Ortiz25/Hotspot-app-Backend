@@ -214,7 +214,7 @@ export function bundleLimit(bundle, user) {
     } else {
       // Insert a new Recv Limit entry
       console.log(checkResults);
-      const insertQuery = `INSERT INTO radreply (username, attribute, op, value) VALUES (?, 'Mikrotik-Recv-Limit', '=', ?)`;
+      const insertQuery = `INSERT INTO radreply (username, attribute, op, value) VALUES (?, 'Mikrotik-Recv-Limit', ':=', ?)`;
 
       db.query(insertQuery, [user, bundle], (insertError, insertResults) => {
         if (insertError) {
