@@ -51,7 +51,7 @@ const userSchema = new mongoose.Schema({
   gender: String,
   fullName: String,
   dob: Date,
-  plan:Number,
+  plan: Number,
 });
 const User = mongoose.model("User", userSchema);
 
@@ -76,8 +76,6 @@ app.get("/", (req, res) => {
   res.send("Hello World!");
 });
 
-
-
 /////////////////// POST REQUESTS ///////////////////////////
 
 app.post("/access", (req, res) => {
@@ -86,12 +84,14 @@ app.post("/access", (req, res) => {
 
   // Create user in DB
   createUserDB(username);
-  await User.findOneAndUpdate({number:username}, {plan: +plan.slice(0, 2)})
+  const user = User.findOneAndUpdate(
+    { number: username },
+    { plan: +plan.slice(0, 2) }
+  );
 
   if (plan === "10MB") {
     // userSessionTimeOut(600, username);
     bundleLimit(10485760, username);
-   
   }
   if (plan === "20MB") {
     // userSessionTimeOut(1200, username);
@@ -108,8 +108,8 @@ app.post("/access", (req, res) => {
 app.post("/balance", async (req, res) => {
   const username = req.body.userName;
   const foundUser = await User.findOne({ number: req.body.number }).exec();
-  const userPlan = foundUser.plan
-  QueryBundleBalance(username, res, userPlan );
+  const userPlan = foundUser.plan;
+  QueryBundleBalance(username, res, userPlan);
 });
 
 app.post("/signup", async (req, res) => {
