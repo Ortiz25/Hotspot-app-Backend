@@ -231,7 +231,7 @@ export function bundleLimit(bundle, user) {
   });
 }
 
-export function QueryBundleBalance(user, res) {
+export function QueryBundleBalance(user, res, userPlan) {
   const db = mysql.createConnection(dbConfig);
 
   // Connect to the MySQL database
@@ -259,7 +259,7 @@ export function QueryBundleBalance(user, res) {
       const outputOctets = results[0].acctoutputoctets;
       console.log(`Mikrotik-Recv-Limit balance for user ${user}:`);
       console.log(`Input Octets: ${inputOctets}`);
-      res.json({ bundleBalance: inputOctets });
+      res.json({ bundleBalance: inputOctets, plan: userPlan });
       console.log(`Output Octets: ${outputOctets}`);
     } else {
       console.log(`No Mikrotik-Recv-Limit balance found for user ${user}`);
