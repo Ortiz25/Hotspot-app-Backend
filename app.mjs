@@ -6,12 +6,8 @@ import bodyParser from "body-parser";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
 import Africastalking from "africastalking";
-import {
-  createUserDB,
-  userSessionTimeOut,
-  bundleLimit,
-  QueryBundleBalance,
-} from "./util/util.mjs";
+import { createUserDB, bundleLimit, QueryBundleBalance } from "./util/util.mjs";
+import mysql from "mysql2";
 
 const app = express();
 const port = 8000;
@@ -37,11 +33,21 @@ const corsOptions = {
 /////////////////////////////////////////////
 
 /////////////////DB///////////////////////////
+const dbConfig = {
+  host: process.env.MYSQLDB_HOST,
+  user: "node",
+  password: process.env.MYSQLDB_PASSWORD,
+  database: "radius",
+  port: 3306,
+};
+const db = mysql.createConnection(dbConfig);
+
 main().catch((err) => console.log(err));
 
 async function main() {
   await mongoose.connect(
-    "mongodb+srv://samueldeya:m0t0m0t0@cluster0.qd7gjoz.mongodb.net/users-mobile-app?retryWrites=true&w=majority"
+    "mongodb+srv://samueldeya:m0t0m0t0@cluster0.qd7gjoz.mongodb.net/users-mobile-app?retryWrites=true&w=majority",
+    { useNewUrlParser: true, useUnifiedTopology: true }
   );
 }
 const userSchema = new mongoose.Schema({
@@ -52,6 +58,7 @@ const userSchema = new mongoose.Schema({
   fullName: String,
   dob: Date,
   plan: Number,
+  planBalance: Number,
 });
 const User = mongoose.model("User", userSchema);
 
@@ -81,13 +88,30 @@ app.get("/", (req, res) => {
 app.post("/access", (req, res) => {
   const username = req.body.user;
   const plan = req.body.plan;
+  console.log(plan);
+
+  // setTimeout(async () => {
+  //   try {
+  //     const user = await User.findOneAndUpdate(
+  //       { number: username },
+  //       { plan: +plan.slice(0, 2) }
+  //     );
+  //     console.log("userplan=", user, plan);
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // }, 5000);
+
+  // db.connect((err) => {
+  //   if (err) {
+  //     console.error("Database connection error:", err);
+  //     throw err;
+  //   }
+  //   console.log("Connected to the database Access");
+  // });
 
   // Create user in DB
   createUserDB(username);
-  const user = User.findOneAndUpdate(
-    { number: username },
-    { plan: +plan.slice(0, 2) }
-  );
 
   if (plan === "10MB") {
     // userSessionTimeOut(600, username);
@@ -95,11 +119,11 @@ app.post("/access", (req, res) => {
   }
   if (plan === "20MB") {
     // userSessionTimeOut(1200, username);
-    bundleLimit(10485760, username);
+    bundleLimit(20485760, username);
   }
   if (plan === "30MB") {
     // userSessionTimeOut(1800, username);
-    bundleLimit(10485760, username);
+    bundleLimit(30485760, username);
   }
 
   res.json({ message: "access created", status: 200 });
@@ -107,9 +131,8 @@ app.post("/access", (req, res) => {
 
 app.post("/balance", async (req, res) => {
   const username = req.body.userName;
-  const foundUser = await User.findOne({ number: req.body.number }).exec();
-  const userPlan = foundUser.plan;
-  QueryBundleBalance(username, res, userPlan);
+  console.log(username);
+  QueryBundleBalance(username, res);
 });
 
 app.post("/signup", async (req, res) => {
@@ -120,6 +143,7 @@ app.post("/signup", async (req, res) => {
     gender: "",
     fullName: "",
     dob: "",
+    plan: 0,
   };
   console.log(signData);
   // const newUser = new User (loginData)
