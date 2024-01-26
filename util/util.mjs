@@ -157,52 +157,28 @@ export function bundleLimit(bundle, user) {
   const checkQuery = `SELECT id FROM radreply WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
 
   db.query(checkQuery, [user], (checkError, checkResults) => {
+    console.log(checkResults);
     if (checkError) throw checkError;
 
     if (checkResults.length > 0) {
-      //check time passed since update
-      const timeQuery =
-        "SELECT last_update_timestamp  FROM radreply WHERE username = ?";
-
-      db.query(timeQuery, [user], (error, timeresults) => {
-        if (error) throw error;
-
-        console.log(timeresults);
-        const lastUpdateTimestamp = DateTime.fromJSDate(
-          timeresults[0].last_update_timestamp
-        );
-        const currentTimestamp = DateTime.now();
-
-        // Calculate the time difference in seconds
-        const timeDifference = currentTimestamp.diff(
-          lastUpdateTimestamp,
-          "seconds"
-        ).seconds;
-
-        if (timeDifference >= 60) {
-          // Update the existing Rate Recv entry
-          const updateQuery = `UPDATE radreply SET value = value + ?, last_update_timestamp = NOW()  WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
-          db.query(
-            updateQuery,
-            [bundle, user],
-            (updateError, updateResults) => {
-              if (updateError) throw updateError;
-              else {
-                console.log(updateResults);
-                console.log(`Mikrotik-Recv-Limit updated for user ${user}`);
-              }
-            }
-          );
+      const updateQuery = `UPDATE radreply SET value = value + ?  WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
+      db.query(updateQuery, [bundle, user], (updateError, result) => {
+        if (updateError) {
+          console.log("Error updating", error);
+          throw updateError;
         } else {
-          db.end();
-          return;
+          console.log(result);
+          console.log(`Mikrotik-Recv-Limit updated for user ${user}`);
         }
+        // Close the MySQL connection
+        db.end();
+        return;
       });
     }
 
     if (checkResults.length === 0) {
       // Insert a new Recv Limit entry
-      const insertQuery = `INSERT INTO radreply (username, attribute, op, value, last_update_timestamp ) VALUES (?, 'Mikrotik-Recv-Limit', ':=', ?, NOW())`;
+      const insertQuery = `INSERT INTO radreply (username, attribute, op, value) VALUES (?, 'Mikrotik-Recv-Limit', ':=', ?)`;
 
       db.query(insertQuery, [user, bundle], (insertError, insertResults) => {
         if (insertError) {
