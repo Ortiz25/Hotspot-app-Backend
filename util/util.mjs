@@ -214,16 +214,21 @@ export function QueryBundleBalance(user, res) {
       console.log("used Data", usedData);
       const checkQuery = `SELECT * FROM radreply WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
       db.query(checkQuery, [user], (error, result) => {
-        console.log("Results", result);
+        console.log("Results", result, usedData);
 
         if (error) console.log(error);
         if (usedData > result[0]?.value && result.length !== 0) {
-          console.log(result[0]?.value);
+          console.log("radvalue", result[0]?.value);
           const deleteQuery = `DELETE FROM radreply  WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
+          const deleteAcct = `DELETE FROM radacct  WHERE username = ? `;
           db.query(deleteQuery, [user], (error, result) => {
             if (error) console.error(error);
             if (result) {
               console.log(result);
+              db.query(deleteAcct, [user], (error, result) => {
+                if (error) console.log("Error Deleting", error);
+                console.log(result);
+              });
             }
           });
         } else {

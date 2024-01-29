@@ -88,6 +88,7 @@ app.get("/", (req, res) => {
 app.post("/access", (req, res) => {
   const username = req.body.user;
   const plan = req.body.plan;
+  console.log(plan);
 
   // Create user in DB
   createUserDB(username);
