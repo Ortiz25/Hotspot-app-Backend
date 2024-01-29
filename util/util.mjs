@@ -217,7 +217,7 @@ export function QueryBundleBalance(user, res) {
         console.log("Results", result);
 
         if (error) console.log(error);
-        if (result[0]?.value > 0) {
+        if (usedData > result[0]?.value) {
           console.log(result[0]?.value);
           const deleteQuery = `DELETE FROM radreply  WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
           db.query(deleteQuery, [user], (error, result) => {
@@ -236,7 +236,13 @@ export function QueryBundleBalance(user, res) {
         }
       });
     } else {
-      res.json({ message: "limit does not exist" });
+      const checkQuery = `SELECT * FROM radreply WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
+      db.query(checkQuery, [user], (error, result) => {
+        console.log("Results", result);
+        res.json({ bundleBalance: result[0]?.value });
+      });
+      console.log("less than zero");
+
       db.end();
       return;
     }
