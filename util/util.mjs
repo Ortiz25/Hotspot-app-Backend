@@ -195,12 +195,7 @@ export function bundleLimit(bundle, user) {
 }
 
 export function QueryBundleBalance(user, res) {
-  const userPlan = 0;
   const db = mysql2.createConnection(dbConfig);
-  const deleteQueryRadreply = `DELETE FROM radreply WHERE username = ? AND attribute = ?;
-  `;
-  const deleteQueryRadacct = `DELETE FROM radacct WHERE username = ?;
-  `;
 
   // Query the Mikrotik-Recv-Limit attribute balance
   const queryUsage = `SELECT acctinputoctets, acctoutputoctets FROM radacct
@@ -227,34 +222,23 @@ export function QueryBundleBalance(user, res) {
     if (results?.length > 0) {
       const inputOctets = results[0].acctinputoctets;
       const usedData = inputOctets / 10000;
-      const bundleBalance = userPlan - usedData.toFixed(0);
-      console.log("your balance is:", bundleBalance);
-
-      // if (bundleBalance <= 0) {
-      //   db.query(
-      //     deleteQueryRadreply,
-      //     [user, "Mikrotik-Recv-Limit"],
-      //     (err, result) => {
-      //       if (err) {
-      //         console.log("Error deleting entry", err);
-      //       }
-      //       console.log(result);
-      //     }
-      //   );
-      //   db.query(deleteQueryRadacct, [user], (err, result) => {
-      //     if (err) {
-      //       console.log("Error deleting entry", err);
-      //     }
-      //     console.log(result);
-      //   });
-      // }
-
-      res.json({ bundleBalance: usedData });
+      const checkQuery = `SELECT * FROM radreply WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
+      db.query(checkQuery, [user], (error, result) => {
+        if (error) console.error(error);
+        if (result) {
+          const bundleBalance = result[0].value - usedData.toFixed(0);
+          console.log("Bundle Balance", bundleBalance);
+          res.json({ bundleBalance: bundleBalance });
+        }
+        db.end();
+        return;
+      });
     } else {
       // console.log(`No Mikrotik-Recv-Limit balance found for user ${user}`);
       res.json({ message: "limit does not exist" });
     }
 
     db.end();
+    return;
   });
 }
