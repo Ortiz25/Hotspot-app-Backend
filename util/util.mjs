@@ -158,7 +158,7 @@ export function bundleLimit(bundle, user) {
   db.query(checkQuery, [user], (checkError, checkResults) => {
     console.log(checkResults);
 
-    if (checkError) throw checkError;
+    if (checkError) console.log("Check Error", checkError);
 
     if (checkResults.length > 0) {
       const updateQuery = `UPDATE radreply SET value = value + ?, last_update_time = NOW() WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
@@ -208,37 +208,37 @@ export function QueryBundleBalance(user, res) {
     if (queryError) {
       console.error("Error querying radacct:", queryError);
     }
-    if (results?.length === 0) {
-      const querryPlan = `SELECT value FROM radreply WHERE username = ?;`;
-      db.query(querryPlan, [user], (err, result) => {
-        if (err) {
-          console.log(err);
-        }
-
-        res.json({ bundleBalance: results ? +result[0]?.value : 0 });
-      });
-      return;
-    }
     if (results?.length > 0) {
       const inputOctets = results[0].acctinputoctets;
-      const usedData = inputOctets / 10000;
+      const usedData = inputOctets;
+      console.log("used Data", usedData);
       const checkQuery = `SELECT * FROM radreply WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
       db.query(checkQuery, [user], (error, result) => {
-        if (error) console.error(error);
-        if (result) {
-          const bundleBalance = result[0].value - usedData.toFixed(0);
-          console.log("Bundle Balance", bundleBalance);
-          res.json({ bundleBalance: bundleBalance });
+        console.log("Results", result);
+
+        if (error) console.log(error);
+        if (result[0]?.value > 0) {
+          console.log(result[0]?.value);
+          const deleteQuery = `DELETE FROM radreply  WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
+          db.query(deleteQuery, [user], (error, result) => {
+            if (error) console.error(error);
+            if (result) {
+              console.log(result);
+            }
+          });
+        } else {
+          const bundleBalance = result[0]?.value - usedData;
+          console.log("Balance", bundleBalance);
+
+          res.json({ bundleBalance: bundleBalance ? bundleBalance : 0 });
+          db.end();
+          return;
         }
-        db.end();
-        return;
       });
     } else {
-      // console.log(`No Mikrotik-Recv-Limit balance found for user ${user}`);
       res.json({ message: "limit does not exist" });
+      db.end();
+      return;
     }
-
-    db.end();
-    return;
   });
 }
