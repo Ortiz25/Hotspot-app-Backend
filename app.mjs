@@ -88,27 +88,6 @@ app.get("/", (req, res) => {
 app.post("/access", (req, res) => {
   const username = req.body.user;
   const plan = req.body.plan;
-  console.log(plan);
-
-  // setTimeout(async () => {
-  //   try {
-  //     const user = await User.findOneAndUpdate(
-  //       { number: username },
-  //       { plan: +plan.slice(0, 2) }
-  //     );
-  //     console.log("userplan=", user, plan);
-  //   } catch (error) {
-  //     console.log(error);
-  //   }
-  // }, 5000);
-
-  // db.connect((err) => {
-  //   if (err) {
-  //     console.error("Database connection error:", err);
-  //     throw err;
-  //   }
-  //   console.log("Connected to the database Access");
-  // });
 
   // Create user in DB
   createUserDB(username);
@@ -131,7 +110,6 @@ app.post("/access", (req, res) => {
 
 app.post("/balance", async (req, res) => {
   const username = req.body.userName;
-  console.log(username);
   QueryBundleBalance(username, res);
 });
 

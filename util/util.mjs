@@ -2,7 +2,6 @@ import * as dotenv from "dotenv";
 dotenv.config();
 import mysql2 from "mysql2";
 import mysql from "mysql";
-import { DateTime } from "luxon";
 
 const dbConfig = {
   host: "165.22.206.135",
@@ -154,18 +153,19 @@ export function bundleLimit(bundle, user) {
   const db = mysql2.createConnection(dbConfig);
 
   // Check if the user already has a Mikrotik-Recv-Limit entry in radreply
-  const checkQuery = `SELECT id FROM radreply WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
+  const checkQuery = `SELECT * FROM radreply WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
 
   db.query(checkQuery, [user], (checkError, checkResults) => {
     console.log(checkResults);
+
     if (checkError) throw checkError;
 
     if (checkResults.length > 0) {
-      const updateQuery = `UPDATE radreply SET value = value + ?  WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
+      const updateQuery = `UPDATE radreply SET value = value + ?, last_update_time = NOW() WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
       db.query(updateQuery, [bundle, user], (updateError, result) => {
         if (updateError) {
-          console.log("Error updating", error);
-          throw updateError;
+          console.log("Error updating", updateError);
+          console.error(updateError);
         } else {
           console.log(result);
           console.log(`Mikrotik-Recv-Limit updated for user ${user}`);
@@ -174,11 +174,9 @@ export function bundleLimit(bundle, user) {
         db.end();
         return;
       });
-    }
-
-    if (checkResults.length === 0) {
+    } else {
       // Insert a new Recv Limit entry
-      const insertQuery = `INSERT INTO radreply (username, attribute, op, value) VALUES (?, 'Mikrotik-Recv-Limit', ':=', ?)`;
+      const insertQuery = `INSERT INTO radreply (username, attribute, op, value, last_update_time ) VALUES (?, 'Mikrotik-Recv-Limit', ':=', ?, NOW())`;
 
       db.query(insertQuery, [user, bundle], (insertError, insertResults) => {
         if (insertError) {
@@ -232,26 +230,26 @@ export function QueryBundleBalance(user, res) {
       const bundleBalance = userPlan - usedData.toFixed(0);
       console.log("your balance is:", bundleBalance);
 
-      if (bundleBalance <= 0) {
-        db.query(
-          deleteQueryRadreply,
-          [user, "Mikrotik-Recv-Limit"],
-          (err, result) => {
-            if (err) {
-              console.log("Error deleting entry", err);
-            }
-            console.log(result);
-          }
-        );
-        db.query(deleteQueryRadacct, [user], (err, result) => {
-          if (err) {
-            console.log("Error deleting entry", err);
-          }
-          console.log(result);
-        });
-      }
+      // if (bundleBalance <= 0) {
+      //   db.query(
+      //     deleteQueryRadreply,
+      //     [user, "Mikrotik-Recv-Limit"],
+      //     (err, result) => {
+      //       if (err) {
+      //         console.log("Error deleting entry", err);
+      //       }
+      //       console.log(result);
+      //     }
+      //   );
+      //   db.query(deleteQueryRadacct, [user], (err, result) => {
+      //     if (err) {
+      //       console.log("Error deleting entry", err);
+      //     }
+      //     console.log(result);
+      //   });
+      // }
 
-      res.json({ bundleBalance: bundleBalance });
+      res.json({ bundleBalance: usedData });
     } else {
       // console.log(`No Mikrotik-Recv-Limit balance found for user ${user}`);
       res.json({ message: "limit does not exist" });
