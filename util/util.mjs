@@ -217,7 +217,7 @@ export function QueryBundleBalance(user, res) {
         console.log("Results", result);
 
         if (error) console.log(error);
-        if (usedData > result[0]?.value) {
+        if (usedData > result[0]?.value && result.length !== 0) {
           console.log(result[0]?.value);
           const deleteQuery = `DELETE FROM radreply  WHERE username = ? AND attribute = 'Mikrotik-Recv-Limit'`;
           db.query(deleteQuery, [user], (error, result) => {
